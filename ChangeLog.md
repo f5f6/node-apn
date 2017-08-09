@@ -1,5 +1,10 @@
 ## Changelog
 
+2.1.2-ses.1:
+* Support hearbeat function
+* Fix memory leak warning
+* Parameter priority is always included in header.
+
 2.1.2:
 * Add TypeScript type definitions (#441, #465)
 * Update node-http2 fork to 3.3.6 and add stream.upstream not defined check (#444)

@@ -229,11 +229,19 @@ describe("Endpoint Manager", function () {
 
     context("when an error occurs", function () {
       let wakeupSpy;
+      let errorSpy;
 
       beforeEach(function () {
         wakeupSpy = sinon.spy();
+        errorSpy = sinon.spy();
+
         manager.on("wakeup", wakeupSpy);
-        
+        manager.on("error", errorSpy);
+        manager.on("error", err => {
+          expect(err).to.match(/endpoint error/i);
+          expect(err.cause()).to.match(/this should be handled/i);
+        });
+
         endpoint.emit("error", new Error("this should be handled"));
       });
 
@@ -247,13 +255,14 @@ describe("Endpoint Manager", function () {
         expect(endpoint.createStream).to.not.be.called;
       });
 
-      it("emits an wakeup event", function (){
-        expect(wakeupSpy).to.be.calledOnce;
+      it("emits an error event", function (){
+        expect(errorSpy).to.be.calledOnce;
       });
 
       it("does not affect a 'connecting' endpoint", function () {
         fakes.Endpoint.reset();
         manager = new EndpointManager({ "maxConnections": 3 });
+
         endpoint = establishEndpoint(manager);
 
         // Trigger creation of a second endpoint
@@ -263,6 +272,10 @@ describe("Endpoint Manager", function () {
         expect(fakes.Endpoint).to.be.calledTwice;
 
         // Error-out the first endpoint
+        manager.on("error", err => {
+          expect(err).to.match(/endpoint error/i);
+          expect(err.cause()).to.match(/this should be handled/i);
+        });
         endpoint.emit("error", new Error("this should be handled"));
 
         // Ensure a third endpoint isn't created as the second is still connecting
@@ -422,12 +435,20 @@ describe("Endpoint Manager", function () {
           "connectionRetryLimit": 2,
         });
 
+        manager.on("error", err => {
+          expect(err).to.match(/endpoint error/i);
+          expect(err.cause()).to.match(/this should be handled/i);
+        });
+
         manager.getStream();
         fakes.Endpoint.lastCall.returnValue.emit("connect");
         fakes.Endpoint.lastCall.returnValue.emit("error", new Error("this should be handled"));
 
+
         manager.getStream();
         fakes.Endpoint.lastCall.returnValue.emit("error", new Error("this should be handled"));
+
+        manager.removeAllListeners("error");
 
         manager.on("error", err => {
           expect(err).to.match(/endpoint error/i);

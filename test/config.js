@@ -24,11 +24,12 @@ describe("config", function () {
       ca: null,
       pfx: null,
       passphrase: null,
+      heartBeat:null,
       production: false,
       address: "api.sandbox.push.apple.com",
       port: 443,
       rejectUnauthorized: true,
-      connectionRetryLimit: 10,
+      connectionRetryLimit: 2,
     });
   });
 
