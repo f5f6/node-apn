@@ -25,6 +25,7 @@ describe("config", function () {
       pfx: null,
       passphrase: null,
       heartBeat:null,
+      proxy: null,
       production: false,
       address: "api.sandbox.push.apple.com",
       port: 443,

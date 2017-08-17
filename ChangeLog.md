@@ -1,5 +1,8 @@
 ## Changelog
 
+2.1.2-ses.2:
+* Support `proxy` in options
+
 2.1.2-ses.1:
 * Support hearbeat function
 * Fix memory leak warning
